@@ -1,0 +1,43 @@
+version: 2.1
+jobs:
+  test_lasso_regression_model:
+    working_directory: ~/project
+    docker:
+      - image: circleci/python:3.8.5
+    steps:
+      - checkout
+      - run:
+          name: Testing model
+          command: |
+           virtualenv venv
+           . venv/bin/activate
+           pip install --upgrade pip
+           pip install -r packages/lasso_regression_model/requirements.txt
+           chmod +x ./scripts/fetch_kaggle_dataset.sh
+           ./scripts/fetch_kaggle_dataset.sh
+           py.test -vv packages/lasso_regression_model/tests
+  
+  test_ml_api:
+    working_directory: ~/project
+    docker:
+      - image: circleci/python:3.8.5
+    steps:
+      - checkout
+      - run:
+          name: Testing api 
+          command: |
+            virtualenv venv 
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install -r packages/ml_api/requirements.txt
+            py.test -vv packages/ml_api/tests
+  
+  
+workflows:
+  version: 2
+  test-all:
+    jobs:
+      - test_lasso_regression_model
+      - test_ml_api
+      
+
